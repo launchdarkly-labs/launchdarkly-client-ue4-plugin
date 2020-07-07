@@ -10,9 +10,9 @@
 #include "LdNodeObject.h"
 #include "LdUserObject.h"
 
-bool ULaunchDarklyBPLibrary::InitializeLaunchDarkly(ULdConfigObject* LdConfig, ULdUserObject* LdUser, int ConnectionTimeout)
+bool ULaunchDarklyBPLibrary::InitializeLaunchDarkly(ULdConfigObject* LdConfig, ULdUserObject* LdUser, int ConnectionTimeoutMillis)
 {
-	return FLaunchDarklyClientModule::Get()->InitializeClient(LdConfig, LdUser, ConnectionTimeout);
+	return FLaunchDarklyClientModule::Get()->InitializeClient(LdConfig, LdUser, ConnectionTimeoutMillis);
 }
 
 void ULaunchDarklyBPLibrary::ShutdownLaunchDarkly()

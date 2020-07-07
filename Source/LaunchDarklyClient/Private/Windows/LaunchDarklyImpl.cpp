@@ -142,7 +142,7 @@ bool FLaunchDarklyImpl::InitializeClient(ULdConfigObject* LdConfigObject, ULdUse
 	const ULaunchDarklySettings* LaunchDarklySettings = GetDefault<ULaunchDarklySettings>();
 	if(LaunchDarklySettings && LaunchDarklySettings->IsLoggingEnabled)
 	{
-		LDSetLogFunction(LD_LOG_DEBUG, FLaunchDarklyImpl::LdLogger);
+		LDSetLogFunction(LD_LOG_TRACE, FLaunchDarklyImpl::LdLogger);
 	}
 
 	if(LdClient)

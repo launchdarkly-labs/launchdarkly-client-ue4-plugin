@@ -20,7 +20,7 @@ public:
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	// CLIENT STATE ////////////////////////////////////////////////////////////////////////////////
 	UFUNCTION(BlueprintCallable, Category = "LaunchDarkly Client")
-		static bool InitializeLaunchDarkly(ULdConfigObject* LdConfig, ULdUserObject* LdUser, int ConnectionTimeout);
+		static bool InitializeLaunchDarkly(ULdConfigObject* LdConfig, ULdUserObject* LdUser, int ConnectionTimeoutMillis);
 
 	UFUNCTION(BlueprintCallable, Category = "LaunchDarkly Client")
 		static void ShutdownLaunchDarkly();
