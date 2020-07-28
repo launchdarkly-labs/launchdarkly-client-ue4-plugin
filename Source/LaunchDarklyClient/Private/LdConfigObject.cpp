@@ -1,5 +1,10 @@
 #include "LdConfigObject.h"
 
+#if PLATFORM_WINDOWS
+#include <launchdarkly/api.h>
+#endif
+
+
 #include "LaunchDarklyHelpers.h"
 
 const FString ULdConfigObject::KeyAllAttributesPrivate = "all-attributes-private";
@@ -35,7 +40,7 @@ ULdConfigObject* ULdConfigObject::CreateLdConfigObject(FString MobileKey)
 LDConfig* const ULdConfigObject::ToLdConfig()
 {
 	FString MobileKey = ConfigData->GetStringField(KeyMobileKey);
-	LDConfig*const LdConfig = LDConfigNew(TCHAR_TO_ANSI(*MobileKey));
+	struct LDConfig*const LdConfig = LDConfigNew(TCHAR_TO_ANSI(*MobileKey));
 
 	if(ConfigData->HasTypedField<EJson::Boolean>(KeyAllAttributesPrivate))
 	{
@@ -92,11 +97,16 @@ LDConfig* const ULdConfigObject::ToLdConfig()
 	if(ConfigData->HasTypedField<EJson::Array>(KeyPrivateAttributeNames))
 	{
 		TArray<TSharedPtr<FJsonValue>> PrivateAttributeArray = ConfigData->GetArrayField(KeyPrivateAttributeNames);
+		struct LDJSON* PrivateAttributeText;
+		struct LDJSON* PrivateAttributesJson = LDNewArray();
 		for(TSharedPtr<FJsonValue> PrivateAttribute : PrivateAttributeArray)
 		{
 			FString PrivateAttributeString = PrivateAttribute->AsString();
-			LDConfigAddPrivateAttribute(LdConfig, TCHAR_TO_ANSI(*PrivateAttributeString));
+			PrivateAttributeText = LDNewText(TCHAR_TO_ANSI(*PrivateAttributeString));
+			LDArrayPush(PrivateAttributesJson, PrivateAttributeText);
 		}
+		LDConfigSetPrivateAttributes(LdConfig, PrivateAttributesJson);
+		LDJSONFree(PrivateAttributesJson);
 	}
 
 	if(ConfigData->HasTypedField<EJson::Boolean>(KeyStream))

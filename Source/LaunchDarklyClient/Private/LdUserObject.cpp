@@ -3,6 +3,10 @@
 #include "LdNodeObject.h"
 #include "LaunchDarklyHelpers.h"
 
+#if PLATFORM_WINDOWS
+#include <launchdarkly/api.h>
+#endif
+
 const FString ULdUserObject::KeyAnonymousAttribute = "anonymous";
 const FString ULdUserObject::KeyAvatarAttribute = "avatar";
 const FString ULdUserObject::KeyCustomAttributes = "custom";
@@ -82,13 +86,18 @@ LDUser* const ULdUserObject::ToLdUser()
 		TSharedPtr<FJsonObject> JsonObj = UserAttributeData->GetObjectField(KeyCustomAttributes);
 
 		FString JsonStr = ULaunchDarklyHelpers::JsonObjectToString(JsonObj);
-		LDNode* LdNodeAttribute = LDNodeFromJSON(TCHAR_TO_ANSI(*JsonStr));
-		LDUserSetCustomAttributes(LdUser, LdNodeAttribute);
+		LDJSON* LdNodeAttribute = LDJSONDeserialize(TCHAR_TO_ANSI(*JsonStr));
+		LDUserSetCustomAttributesJSON(LdUser, LdNodeAttribute);
 	}
+
+	struct LDJSON* PrivateAttributeText;
+	struct LDJSON* PrivateAttributesJson = LDNewArray();
 	for(FString PrivateAttributeName : PrivateAttributeNames)
 	{
-		LDUserAddPrivateAttribute(LdUser, TCHAR_TO_ANSI(*PrivateAttributeName));
+		PrivateAttributeText = LDNewText(TCHAR_TO_ANSI(*PrivateAttributeName));
+		LDArrayPush(PrivateAttributesJson, PrivateAttributeText);
 	}
+	LDUserSetPrivateAttributes(LdUser, PrivateAttributesJson);
 
 	return LdUser;
 }

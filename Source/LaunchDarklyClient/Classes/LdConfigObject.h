@@ -2,11 +2,11 @@
 
 #include "Dom/JsonObject.h"
 
-#if PLATFORM_WINDOWS
-#include "ldapi.h"
-#endif
-
 #include "LdConfigObject.generated.h"
+
+#if PLATFORM_WINDOWS
+struct LDConfig;
+#endif
 
 UCLASS(BlueprintType)
 class LAUNCHDARKLYCLIENT_API ULdConfigObject : public UObject

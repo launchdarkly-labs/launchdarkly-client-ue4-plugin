@@ -32,6 +32,36 @@ TMap<FString, TArray<ULdStringFlagListener*>>& FLaunchDarklyImplBase::GetStringF
 	return StringFlagListeners;
 }
 
+TMap<FString, TArray<ULdBoolFlagListenerComponent*>>& FLaunchDarklyImplBase::GetBoolFlagListenerComponents()
+{
+	return BoolFlagListenerComponents;
+}
+
+TMap<FString, TArray<ULdFloatFlagListenerComponent*>>& FLaunchDarklyImplBase::GetFloatFlagListenerComponents()
+{
+	return FloatFlagListenerComponents;
+}
+
+TMap<FString, TArray<ULdIntFlagListenerComponent*>>& FLaunchDarklyImplBase::GetIntFlagListenerComponents()
+{
+	return IntFlagListenerComponents;
+}
+
+TMap<FString, TArray<ULdJsonFlagListenerComponent*>>& FLaunchDarklyImplBase::GetJsonFlagListenerComponents()
+{
+	return JsonFlagListenerComponents;
+}
+
+TMap<FString, TArray<ULdStringFlagListenerComponent*>>& FLaunchDarklyImplBase::GetStringFlagListenerComponents()
+{
+	return StringFlagListenerComponents;
+}
+
+TMap<FString, FlagListenerFP>& FLaunchDarklyImplBase::GetUnregisteredFlagListeners()
+{
+	return UnregisteredFlagListeners;
+}
+
 void FLaunchDarklyImplBase::InitJavaFunctions()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("CALLED BUT UNSUPPORTED: LaunchDarkly Plugin Java functions initialized from Generic Platform."));
@@ -130,61 +160,121 @@ FString FLaunchDarklyImplBase::GetStringVariation(FString FlagName, FString Defa
 
 void FLaunchDarklyImplBase::RegisterBoolFlagListener(ULdBoolFlagListener* FlagListener, FString FlagName)
 {
-	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERBOOLFLAGLISTENER CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERBOOLFLAGLISTENERS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
 }
 
 void FLaunchDarklyImplBase::UnregisterBoolFlagListener(ULdBoolFlagListener* FlagListener, FString FlagName)
 {
-	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERBOOLFLAGLISTENER CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERBOOLFLAGLISTENERS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
 }
 
 void FLaunchDarklyImplBase::RegisterFloatFlagListener(ULdFloatFlagListener* FlagListener, FString FlagName)
 {
-	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERFLOATFLAGLISTENER CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERFLOATFLAGLISTENERS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
 }
 
 void FLaunchDarklyImplBase::UnregisterFloatFlagListener(ULdFloatFlagListener* FlagListener, FString FlagName)
 {
-	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERFLOATFLAGLISTENER CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERFLOATFLAGLISTENERS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
 }
 
 void FLaunchDarklyImplBase::RegisterIntFlagListener(ULdIntFlagListener* FlagListener, FString FlagName)
 {
-	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERINTFLAGLISTENER CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERINTFLAGLISTENERS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
 }
 
 void FLaunchDarklyImplBase::UnregisterIntFlagListener(ULdIntFlagListener* FlagListener, FString FlagName)
 {
-	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERINTFLAGLISTENER CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERINTFLAGLISTENERS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
 }
 
 void FLaunchDarklyImplBase::RegisterJsonFlagListener(ULdJsonFlagListener* FlagListener, FString FlagName)
 {
-	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERJSONFLAGLISTENER CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERJSONFLAGLISTENERS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
 }
 
 void FLaunchDarklyImplBase::UnregisterJsonFlagListener(ULdJsonFlagListener* FlagListener, FString FlagName)
 {
-	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERJSONFLAGLISTENER CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERJSONFLAGLISTENERS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
 }
 
 void FLaunchDarklyImplBase::RegisterStringFlagListener(ULdStringFlagListener* FlagListener, FString FlagName)
 {
-	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERSTRINGFLAGLISTENER CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERSTRINGFLAGLISTENERS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
 }
 
 void FLaunchDarklyImplBase::UnregisterStringFlagListener(ULdStringFlagListener* FlagListener, FString FlagName)
 {
-	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERSTRINGFLAGLISTENER CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERSTRINGFLAGLISTENERS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
+}
+
+void FLaunchDarklyImplBase::RegisterBoolFlagListenerComponent(ULdBoolFlagListenerComponent* FlagListener, FString FlagName)
+{
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERBOOLFLAGLISTENERCOMPONENTS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
+}
+
+void FLaunchDarklyImplBase::UnregisterBoolFlagListenerComponent(ULdBoolFlagListenerComponent* FlagListener, FString FlagName)
+{
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERBOOLFLAGLISTENERCOMPONENT CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
+}
+
+void FLaunchDarklyImplBase::RegisterFloatFlagListenerComponent(ULdFloatFlagListenerComponent* FlagListener, FString FlagName)
+{
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERFLOATFLAGLISTENERCOMPONENTS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
+}
+
+void FLaunchDarklyImplBase::UnregisterFloatFlagListenerComponent(ULdFloatFlagListenerComponent* FlagListener, FString FlagName)
+{
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERFLOATFLAGLISTENERCOMPONENT CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
+}
+
+void FLaunchDarklyImplBase::RegisterIntFlagListenerComponent(ULdIntFlagListenerComponent* FlagListener, FString FlagName)
+{
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERINTFLAGLISTENERCOMPONENTS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
+}
+
+void FLaunchDarklyImplBase::UnregisterIntFlagListenerComponent(ULdIntFlagListenerComponent* FlagListener, FString FlagName)
+{
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERINTFLAGLISTENERCOMPONENT CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
+}
+
+void FLaunchDarklyImplBase::RegisterJsonFlagListenerComponent(ULdJsonFlagListenerComponent* FlagListener, FString FlagName)
+{
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERJSONFLAGLISTENERCOMPONENTS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
+}
+
+void FLaunchDarklyImplBase::UnregisterJsonFlagListenerComponent(ULdJsonFlagListenerComponent* FlagListener, FString FlagName)
+{
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERJSONFLAGLISTENERCOMPONENT CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
+}
+
+void FLaunchDarklyImplBase::RegisterStringFlagListenerComponent(ULdStringFlagListenerComponent* FlagListener, FString FlagName)
+{
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY REGISTERSTRINGFLAGLISTENERCOMPONENTS CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
+}
+
+void FLaunchDarklyImplBase::UnregisterStringFlagListenerComponent(ULdStringFlagListenerComponent* FlagListener, FString FlagName)
+{
+	FString DebugMessage = FString::Printf(TEXT("LAUNCHDARKLY UNREGISTERSTRINGFLAGLISTENERCOMPONENT CALLED ON UNSUPPORTED PLATFORM: FlagName: %s"), *FlagName);
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
 }
 
@@ -202,61 +292,3 @@ void FLaunchDarklyImplBase::Track(FString MetricName, TSharedPtr<FJsonObject> Da
 	);
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, DebugMessage);
 } 
-
-void FLaunchDarklyImplBase::ResetListeners()
-{
-	for(auto& Entry : BoolFlagListeners)
-	{
-		TArray<ULdBoolFlagListener*>& Listeners = Entry.Value;
-		for(auto& Listener : Listeners)
-		{
-			Listener->RemoveFromRoot();
-		}
-		Listeners.Empty();
-	}
-	BoolFlagListeners.Empty();
-
-	for(auto& Entry : FloatFlagListeners)
-	{
-		TArray<ULdFloatFlagListener*>& Listeners = Entry.Value;
-		for(auto& Listener : Listeners)
-		{
-			Listener->RemoveFromRoot();
-		}
-		Listeners.Empty();
-	}
-	FloatFlagListeners.Empty();
-
-	for(auto& Entry : IntFlagListeners)
-	{
-		TArray<ULdIntFlagListener*>& Listeners = Entry.Value;
-		for(auto& Listener : Listeners)
-		{
-			Listener->RemoveFromRoot();
-		}
-		Listeners.Empty();
-	}
-	IntFlagListeners.Empty();
-
-	for(auto& Entry : JsonFlagListeners)
-	{
-		TArray<ULdJsonFlagListener*>& Listeners = Entry.Value;
-		for(auto& Listener : Listeners)
-		{
-			Listener->RemoveFromRoot();
-		}
-		Listeners.Empty();
-	}
-	JsonFlagListeners.Empty();
-
-	for(auto& Entry : StringFlagListeners)
-	{
-		TArray<ULdStringFlagListener*>& Listeners = Entry.Value;
-		for(auto& Listener : Listeners)
-		{
-			Listener->RemoveFromRoot();
-		}
-		Listeners.Empty();
-	}
-	StringFlagListeners.Empty();
-}

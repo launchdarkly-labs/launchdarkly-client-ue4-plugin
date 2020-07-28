@@ -2,7 +2,9 @@
 
 #include "LaunchDarklyImplBase.h"
 
-#include "ldapi.h"
+#include <launchdarkly/api.h>
+
+struct LDClient;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // WINDOWS /////////////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +63,26 @@ public:
 
 	void UnregisterStringFlagListener(ULdStringFlagListener* FlagListener, FString FlagName) override;
 
+	void RegisterBoolFlagListenerComponent(ULdBoolFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void UnregisterBoolFlagListenerComponent(ULdBoolFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void RegisterFloatFlagListenerComponent(ULdFloatFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void UnregisterFloatFlagListenerComponent(ULdFloatFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void RegisterIntFlagListenerComponent(ULdIntFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void UnregisterIntFlagListenerComponent(ULdIntFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void RegisterJsonFlagListenerComponent(ULdJsonFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void UnregisterJsonFlagListenerComponent(ULdJsonFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void RegisterStringFlagListenerComponent(ULdStringFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void UnregisterStringFlagListenerComponent(ULdStringFlagListenerComponent* FlagListener, FString FlagName) override;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	// METRIC TRACKING /////////////////////////////////////////////////////////////////////////////
 	void Track(FString MetricName) override;
@@ -69,17 +91,23 @@ public:
 
 protected:
 	// Static all the things that need to live in the two worlds of LD and UE4 Game threads.
-	static LDClient_i* LdClient;
+	static LDClient* LdClient;
 
 	static void BoolFlagListener(const char* const FlagName, const int FlagStatus);
 	static void FloatFlagListener(const char* const FlagName, const int FlagStatus);
 	static void IntFlagListener(const char* const FlagName, const int FlagStatus);
 	static void JsonFlagListener(const char* const FlagName, const int FlagStatus);
 	static void StringFlagListener(const char* const FlagName, const int FlagStatus);
+	static void BoolFlagListenerEvent(const char* const FlagName, const int FlagStatus);
+	static void FloatFlagListenerEvent(const char* const FlagName, const int FlagStatus);
+	static void IntFlagListenerEvent(const char* const FlagName, const int FlagStatus);
+	static void JsonFlagListenerEvent(const char* const FlagName, const int FlagStatus);
+	static void StringFlagListenerEvent(const char* const FlagName, const int FlagStatus);
 
-	static void LdLogger(const char* s);
+	static void LdLogger(const LDLogLevel LogLvl, const char* const Message);
 	static void ClientStatusCallback(int s);
 
+	static void CleanupFlagListeners();
 	static void RestoreFlagListeners();
 	static void UpdateAllFlagListeners();
 };

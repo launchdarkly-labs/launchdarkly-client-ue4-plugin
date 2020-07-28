@@ -30,8 +30,8 @@ public class LaunchDarklyClient : ModuleRules
 
 			string LdDllDestination = ModuleDirectory + "/../../Binaries/Win64";
 			string LdBinaryDirectory = LdSdkDirectory + "/lib/x64";
-			string LdDllName = "/ldclient.dll";
-			string LdLibName = "/ldclient.lib";
+			string LdDllName = "/ldclientapi.dll";
+			string LdLibName = "/ldclientapi.lib";
 
 			PublicAdditionalLibraries.Add(LdBinaryDirectory + LdLibName);
 			PrivateIncludePaths.Add("LaunchDarklyClient/Private/Windows");

@@ -2,11 +2,11 @@
 
 #include "Dom/JsonObject.h"
 
-#if PLATFORM_WINDOWS
-#include "ldapi.h"
-#endif
-
 #include "LdUserObject.generated.h"
+
+#if PLATFORM_WINDOWS
+struct LDUser;
+#endif
 
 class ULdNodeObject;
 

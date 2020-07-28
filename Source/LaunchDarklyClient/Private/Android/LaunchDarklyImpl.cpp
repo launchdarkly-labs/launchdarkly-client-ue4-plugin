@@ -1,4 +1,5 @@
 #include "LaunchDarklyImpl.h"
+#include "LaunchDarklyClient.h"
 
 #include "Async/Async.h"
 #include "Dom/JsonObject.h"
@@ -6,11 +7,16 @@
 
 #include "LdConfigObject.h"
 #include "LdBoolFlagListener.h"
+#include "LdBoolFlagListenerComponent.h"
 #include "LdFloatFlagListener.h"
+#include "LdFloatFlagListenerComponent.h"
 #include "LdIntFlagListener.h"
+#include "LdIntFlagListenerComponent.h"
 #include "LdJsonFlagListener.h"
+#include "LdJsonFlagListenerComponent.h"
 #include "LdNodeObject.h"
 #include "LdStringFlagListener.h"
+#include "LdStringFlagListenerComponent.h"
 #include "LdUserObject.h"
 #include "LaunchDarklyHelpers.h"
 
@@ -44,11 +50,20 @@ static jmethodID AndroidLdSdkInterface_UnregisterJsonFeatureFlagListener = 0;
 static jmethodID AndroidLdSdkInterface_RegisterStringFeatureFlagListener = 0;
 static jmethodID AndroidLdSdkInterface_UnregisterStringFeatureFlagListener = 0;
 
+static jmethodID AndroidLdSdkInterface_RegisterBoolFeatureFlagListenerComponent = 0;
+static jmethodID AndroidLdSdkInterface_UnregisterBoolFeatureFlagListenerComponent = 0;
+static jmethodID AndroidLdSdkInterface_RegisterFloatFeatureFlagListenerComponent = 0;
+static jmethodID AndroidLdSdkInterface_UnregisterFloatFeatureFlagListenerComponent = 0;
+static jmethodID AndroidLdSdkInterface_RegisterIntFeatureFlagListenerComponent = 0;
+static jmethodID AndroidLdSdkInterface_UnregisterIntFeatureFlagListenerComponent = 0;
+static jmethodID AndroidLdSdkInterface_RegisterJsonFeatureFlagListenerComponent = 0;
+static jmethodID AndroidLdSdkInterface_UnregisterJsonFeatureFlagListenerComponent = 0;
+static jmethodID AndroidLdSdkInterface_RegisterStringFeatureFlagListenerComponent = 0;
+static jmethodID AndroidLdSdkInterface_UnregisterStringFeatureFlagListenerComponent = 0;
+
 static jmethodID AndroidLdSdkInterface_Track = 0;
 static jmethodID AndroidLdSdkInterface_TrackWithData = 0;
 #endif
-
-DEFINE_LOG_CATEGORY(LaunchDarklyClient);
 
 void FLaunchDarklyImpl::InitJavaFunctions()
 {
@@ -81,6 +96,28 @@ void FLaunchDarklyImpl::InitJavaFunctions()
 		AndroidLdSdkInterface_RegisterStringFeatureFlagListener = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_RegisterStringFeatureFlagListener", "(Ljava/lang/String;)V", false);
 		AndroidLdSdkInterface_UnregisterStringFeatureFlagListener = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_UnregisterStringFeatureFlagListener", "(Ljava/lang/String;)V", false);
 
+		AndroidLdSdkInterface_RegisterBoolFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_RegisterBoolFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_UnregisterBoolFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_UnregisterBoolFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_RegisterFloatFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_RegisterFloatFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_UnregisterFloatFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_UnregisterFloatFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_RegisterIntFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_RegisterIntFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_UnregisterIntFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_UnregisterIntFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_RegisterJsonFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_RegisterJsonFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_UnregisterJsonFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_UnregisterJsonFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_RegisterStringFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_RegisterStringFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_UnregisterStringFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_UnregisterStringFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+
+		AndroidLdSdkInterface_RegisterBoolFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_RegisterBoolFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_UnregisterBoolFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_UnregisterBoolFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_RegisterFloatFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_RegisterFloatFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_UnregisterFloatFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_UnregisterFloatFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_RegisterIntFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_RegisterIntFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_UnregisterIntFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_UnregisterIntFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_RegisterJsonFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_RegisterJsonFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_UnregisterJsonFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_UnregisterJsonFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_RegisterStringFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_RegisterStringFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+		AndroidLdSdkInterface_UnregisterStringFeatureFlagListenerComponent = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_UnregisterStringFeatureFlagListenerComponent", "(Ljava/lang/String;)V", false);
+
 		AndroidLdSdkInterface_Track = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_Track", "(Ljava/lang/String;)V", false);
 		AndroidLdSdkInterface_TrackWithData = FJavaWrapper::FindMethod(Env, FJavaWrapper::GameActivityClassID, "AndroidLdSdkInterface_TrackWithData", "(Ljava/lang/String;Ljava/lang/String;)V", false);
 	}
@@ -96,7 +133,6 @@ void FLaunchDarklyImpl::InitJavaFunctions()
 bool FLaunchDarklyImpl::InitializeClient(ULdConfigObject* LdConfig, ULdUserObject* LdUser, int ConnectionTimeoutMillis)
 {
 	bool isInitialized = false;
-	ResetListeners();
 #if PLATFORM_ANDROID
 	if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
 	{
@@ -424,12 +460,10 @@ void FLaunchDarklyImpl::RegisterJsonFlagListener(ULdJsonFlagListener* FlagListen
 	TMap<FString, TArray<ULdJsonFlagListener*>>& JsonFlagListeners = FLaunchDarklyClientModule::Get()->GetJsonFlagListeners();
 	if(JsonFlagListeners.Contains(FlagName) == false)
 	{
-		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterJsonFlagListener STARTED >>%s<<."), *FlagName);
 #if PLATFORM_ANDROID
 		if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
 		{
 			jstring JFlagName = Env->NewStringUTF(TCHAR_TO_UTF8(*FlagName));
-			UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterJsonFlagListener COMPLETED."));
 			FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidLdSdkInterface_RegisterJsonFeatureFlagListener, JFlagName);
 		}
 #endif
@@ -441,7 +475,6 @@ void FLaunchDarklyImpl::RegisterJsonFlagListener(ULdJsonFlagListener* FlagListen
 	{
 		TArray<ULdJsonFlagListener*>& FlagListenerArray = JsonFlagListeners[FlagName];
 		FlagListenerArray.Add(FlagListener);
-		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterJsonFlagListener COMPLETED >>%s<<. Total listeners: %d"), *FlagName, FlagListenerArray.Num());
 	}
 }
 
@@ -450,7 +483,6 @@ void FLaunchDarklyImpl::UnregisterJsonFlagListener(ULdJsonFlagListener* FlagList
 	TMap<FString, TArray<ULdJsonFlagListener*>>& JsonFlagListeners = FLaunchDarklyClientModule::Get()->GetJsonFlagListeners();
 	if(JsonFlagListeners.Contains(FlagName))
 	{
-		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterJsonFlagListener STARTED >>%s<<."), *FlagName);
 		TArray<ULdJsonFlagListener*>& FlagListenerArray = JsonFlagListeners[FlagName];
 		FlagListenerArray.Remove(FlagListener);
 		if(FlagListenerArray.Num() == 0)
@@ -460,14 +492,9 @@ void FLaunchDarklyImpl::UnregisterJsonFlagListener(ULdJsonFlagListener* FlagList
 			if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
 			{
 				jstring JFlagName = Env->NewStringUTF(TCHAR_TO_UTF8(*FlagName));
-				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterJsonFlagListener COMPLETED."));
 				FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidLdSdkInterface_UnregisterJsonFeatureFlagListener, JFlagName);
 			}
 #endif
-		}
-		else
-		{
-			UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterJsonFlagListener COMPLETED. %d listeners remain."), FlagListenerArray.Num());
 		}
 	}
 }
@@ -525,6 +552,262 @@ void FLaunchDarklyImpl::UnregisterStringFlagListener(ULdStringFlagListener* Flag
 	}
 }
 
+void FLaunchDarklyImpl::RegisterBoolFlagListenerComponent(ULdBoolFlagListenerComponent* FlagListener, FString FlagName)
+{
+	TMap<FString, TArray<ULdBoolFlagListenerComponent*>>& BoolFlagListeners = FLaunchDarklyClientModule::Get()->GetBoolFlagListenerComponents();
+	if(BoolFlagListeners.Contains(FlagName) == false)
+	{
+		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterBoolFlagListenerComponent STARTED >>%s<<."), *FlagName);
+#if PLATFORM_ANDROID
+		if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+		{
+			jstring JFlagName = Env->NewStringUTF(TCHAR_TO_UTF8(*FlagName));
+			UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterBoolFlagListenerComponent COMPLETED."));
+			FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidLdSdkInterface_RegisterBoolFeatureFlagListenerComponent, JFlagName);
+		}
+#endif
+		TArray<ULdBoolFlagListenerComponent*> FlagListenerArray;
+		FlagListenerArray.Add(FlagListener);
+		BoolFlagListeners.Add(FlagName, FlagListenerArray);
+	}
+	else
+	{
+		TArray<ULdBoolFlagListenerComponent*>& FlagListenerArray = BoolFlagListeners[FlagName];
+		FlagListenerArray.Add(FlagListener);
+		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterBoolFlagListenerComponent COMPLETED >>%s<<. Total listeners: %d"), *FlagName, FlagListenerArray.Num());
+	}
+}
+
+void FLaunchDarklyImpl::UnregisterBoolFlagListenerComponent(ULdBoolFlagListenerComponent* FlagListener, FString FlagName)
+{
+	TMap<FString, TArray<ULdBoolFlagListenerComponent*>>& BoolFlagListeners = FLaunchDarklyClientModule::Get()->GetBoolFlagListenerComponents();
+	if(BoolFlagListeners.Contains(FlagName))
+	{
+		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterBoolFlagListenerComponent STARTED >>%s<<."), *FlagName);
+		TArray<ULdBoolFlagListenerComponent*>& FlagListenerArray = BoolFlagListeners[FlagName];
+		FlagListenerArray.Remove(FlagListener);
+		if(FlagListenerArray.Num() == 0)
+		{
+			BoolFlagListeners.Remove(FlagName);
+#if PLATFORM_ANDROID
+			if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+			{
+				jstring JFlagName = Env->NewStringUTF(TCHAR_TO_UTF8(*FlagName));
+				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterBoolFlagListenerComponent COMPLETED."));
+				FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidLdSdkInterface_UnregisterBoolFeatureFlagListenerComponent, JFlagName);
+			}
+#endif
+		}
+		else
+		{
+			UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterBoolFlagListenerComponent COMPLETED. %d listeners remain."), FlagListenerArray.Num());
+		}
+	}
+}
+
+void FLaunchDarklyImpl::RegisterFloatFlagListenerComponent(ULdFloatFlagListenerComponent* FlagListener, FString FlagName)
+{
+	TMap<FString, TArray<ULdFloatFlagListenerComponent*>>& FloatFlagListeners = FLaunchDarklyClientModule::Get()->GetFloatFlagListenerComponents();
+	if(FloatFlagListeners.Contains(FlagName) == false)
+	{
+		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterFloatFlagListenerComponent STARTED >>%s<<."), *FlagName);
+#if PLATFORM_ANDROID
+		if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+		{
+			jstring JFlagName = Env->NewStringUTF(TCHAR_TO_UTF8(*FlagName));
+			UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterFloatFlagListenerComponent COMPLETED."));
+			FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidLdSdkInterface_RegisterFloatFeatureFlagListenerComponent, JFlagName);
+		}
+#endif
+		TArray<ULdFloatFlagListenerComponent*> FlagListenerArray;
+		FlagListenerArray.Add(FlagListener);
+		FloatFlagListeners.Add(FlagName, FlagListenerArray);
+	}
+	else
+	{
+		TArray<ULdFloatFlagListenerComponent*>& FlagListenerArray = FloatFlagListeners[FlagName];
+		FlagListenerArray.Add(FlagListener);
+		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterFloatFlagListenerComponent COMPLETED >>%s<<. Total listeners: %d"), *FlagName, FlagListenerArray.Num());
+	}
+}
+
+void FLaunchDarklyImpl::UnregisterFloatFlagListenerComponent(ULdFloatFlagListenerComponent* FlagListener, FString FlagName)
+{
+	TMap<FString, TArray<ULdFloatFlagListenerComponent*>>& FloatFlagListeners = FLaunchDarklyClientModule::Get()->GetFloatFlagListenerComponents();
+	if(FloatFlagListeners.Contains(FlagName))
+	{
+		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterFloatFlagListenerComponent STARTED >>%s<<."), *FlagName);
+		TArray<ULdFloatFlagListenerComponent*>& FlagListenerArray = FloatFlagListeners[FlagName];
+		FlagListenerArray.Remove(FlagListener);
+		if(FlagListenerArray.Num() == 0)
+		{
+			FloatFlagListeners.Remove(FlagName);
+#if PLATFORM_ANDROID
+			if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+			{
+				jstring JFlagName = Env->NewStringUTF(TCHAR_TO_UTF8(*FlagName));
+				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterFloatFlagListenerComponent  COMPLETED."));
+				FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidLdSdkInterface_UnregisterFloatFeatureFlagListenerComponent, JFlagName);
+			}
+#endif
+		}
+		else
+		{
+			UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterFloatFlagListenerComponent COMPLETED. %d listeners remain."), FlagListenerArray.Num());
+		}
+	}
+}
+
+void FLaunchDarklyImpl::RegisterIntFlagListenerComponent(ULdIntFlagListenerComponent* FlagListener, FString FlagName)
+{
+	TMap<FString, TArray<ULdIntFlagListenerComponent*>>& IntFlagListeners = FLaunchDarklyClientModule::Get()->GetIntFlagListenerComponents();
+	if(IntFlagListeners.Contains(FlagName) == false)
+	{
+		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterIntFlagListenerComponent STARTED >>%s<<."), *FlagName);
+#if PLATFORM_ANDROID
+		if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+		{
+			jstring JFlagName = Env->NewStringUTF(TCHAR_TO_UTF8(*FlagName));
+			UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterIntFlagListenerComponent COMPLETED."));
+			FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidLdSdkInterface_RegisterIntFeatureFlagListenerComponent, JFlagName);
+		}
+#endif
+		TArray<ULdIntFlagListenerComponent*> FlagListenerArray;
+		FlagListenerArray.Add(FlagListener);
+		IntFlagListeners.Add(FlagName, FlagListenerArray);
+	}
+	else
+	{
+		TArray<ULdIntFlagListenerComponent*>& FlagListenerArray = IntFlagListeners[FlagName];
+		FlagListenerArray.Add(FlagListener);
+		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterIntFlagListener COMPLETED >>%s<<. Total listeners: %d"), *FlagName, FlagListenerArray.Num());
+	}
+}
+
+void FLaunchDarklyImpl::UnregisterIntFlagListenerComponent(ULdIntFlagListenerComponent* FlagListener, FString FlagName)
+{
+	TMap<FString, TArray<ULdIntFlagListenerComponent*>>& IntFlagListeners = FLaunchDarklyClientModule::Get()->GetIntFlagListenerComponents();
+	if(IntFlagListeners.Contains(FlagName))
+	{
+		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterIntFlagListener STARTED >>%s<<."), *FlagName);
+		TArray<ULdIntFlagListenerComponent*>& FlagListenerArray = IntFlagListeners[FlagName];
+		FlagListenerArray.Remove(FlagListener);
+		if(FlagListenerArray.Num() == 0)
+		{
+			IntFlagListeners.Remove(FlagName);
+#if PLATFORM_ANDROID
+			if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+			{
+				jstring JFlagName = Env->NewStringUTF(TCHAR_TO_UTF8(*FlagName));
+				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterIntFlagListener COMPLETED."));
+				FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidLdSdkInterface_UnregisterIntFeatureFlagListener, JFlagName);
+			}
+#endif
+		}
+		else
+		{
+			UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterIntFlagListener COMPLETED. %d listeners remain."), FlagListenerArray.Num());
+		}
+	}
+}
+
+void FLaunchDarklyImpl::RegisterJsonFlagListenerComponent(ULdJsonFlagListenerComponent* FlagListener, FString FlagName)
+{
+	TMap<FString, TArray<ULdJsonFlagListenerComponent*>>& JsonFlagListeners = FLaunchDarklyClientModule::Get()->GetJsonFlagListenerComponents();
+	if(JsonFlagListeners.Contains(FlagName) == false)
+	{
+#if PLATFORM_ANDROID
+		if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+		{
+			jstring JFlagName = Env->NewStringUTF(TCHAR_TO_UTF8(*FlagName));
+			FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidLdSdkInterface_RegisterJsonFeatureFlagListenerComponent, JFlagName);
+		}
+#endif
+		TArray<ULdJsonFlagListenerComponent*> FlagListenerArray;
+		FlagListenerArray.Add(FlagListener);
+		JsonFlagListeners.Add(FlagName, FlagListenerArray);
+	}
+	else
+	{
+		TArray<ULdJsonFlagListenerComponent*>& FlagListenerArray = JsonFlagListeners[FlagName];
+		FlagListenerArray.Add(FlagListener);
+	}
+}
+
+void FLaunchDarklyImpl::UnregisterJsonFlagListenerComponent(ULdJsonFlagListenerComponent* FlagListener, FString FlagName)
+{
+	TMap<FString, TArray<ULdJsonFlagListenerComponent*>>& JsonFlagListeners = FLaunchDarklyClientModule::Get()->GetJsonFlagListenerComponents();
+	if(JsonFlagListeners.Contains(FlagName))
+	{
+		TArray<ULdJsonFlagListenerComponent*>& FlagListenerArray = JsonFlagListeners[FlagName];
+		FlagListenerArray.Remove(FlagListener);
+		if(FlagListenerArray.Num() == 0)
+		{
+			JsonFlagListeners.Remove(FlagName);
+#if PLATFORM_ANDROID
+			if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+			{
+				jstring JFlagName = Env->NewStringUTF(TCHAR_TO_UTF8(*FlagName));
+				FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidLdSdkInterface_UnregisterJsonFeatureFlagListenerComponent, JFlagName);
+			}
+#endif
+		}
+	}
+}
+
+void FLaunchDarklyImpl::RegisterStringFlagListenerComponent(ULdStringFlagListenerComponent* FlagListener, FString FlagName)
+{
+	TMap<FString, TArray<ULdStringFlagListenerComponent*>>& StringFlagListeners = FLaunchDarklyClientModule::Get()->GetStringFlagListenerComponents();
+	if(StringFlagListeners.Contains(FlagName) == false)
+	{
+		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterStringFlagListenerComponent STARTED >>%s<<."), *FlagName);
+#if PLATFORM_ANDROID
+		if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+		{
+			jstring JFlagName = Env->NewStringUTF(TCHAR_TO_UTF8(*FlagName));
+			UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterStringFlagListenerComponent COMPLETED."));
+			FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidLdSdkInterface_RegisterStringFeatureFlagListenerComponent, JFlagName);
+		}
+#endif
+		TArray<ULdStringFlagListenerComponent*> FlagListenerArray;
+		FlagListenerArray.Add(FlagListener);
+		StringFlagListeners.Add(FlagName, FlagListenerArray);
+	}
+	else
+	{
+		TArray<ULdStringFlagListenerComponent*>& FlagListenerArray = StringFlagListeners[FlagName];
+		FlagListenerArray.Add(FlagListener);
+		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: RegisterStringFlagListenerComponent COMPLETED >>%s<<. Total listeners: %d"), *FlagName, FlagListenerArray.Num());
+	}
+}
+
+void FLaunchDarklyImpl::UnregisterStringFlagListenerComponent(ULdStringFlagListenerComponent* FlagListener, FString FlagName)
+{
+	TMap<FString, TArray<ULdStringFlagListenerComponent*>>& StringFlagListeners = FLaunchDarklyClientModule::Get()->GetStringFlagListenerComponents();
+	if(StringFlagListeners.Contains(FlagName))
+	{
+		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterStringFlagListenerComponent STARTED >>%s<<."), *FlagName);
+		TArray<ULdStringFlagListenerComponent*>& FlagListenerArray = StringFlagListeners[FlagName];
+		FlagListenerArray.Remove(FlagListener);
+		if(FlagListenerArray.Num() == 0)
+		{
+			StringFlagListeners.Remove(FlagName);
+#if PLATFORM_ANDROID
+			if(JNIEnv* Env = FAndroidApplication::GetJavaEnv(true))
+			{
+				jstring JFlagName = Env->NewStringUTF(TCHAR_TO_UTF8(*FlagName));
+				FJavaWrapper::CallVoidMethod(Env, FJavaWrapper::GameActivityThis, AndroidLdSdkInterface_UnregisterStringFeatureFlagListenerComponent, JFlagName);
+				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterStringFlagListenerComponent COMPLETED."));
+			}
+#endif
+		}
+		else
+		{
+			UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: UnregisterStringFlagListenerComponent COMPLETED. %d listeners remain."), FlagListenerArray.Num());
+		}
+	}
+}
+
 void FLaunchDarklyImpl::Track(FString MetricName)
 {
 #if PLATFORM_ANDROID
@@ -557,18 +840,13 @@ extern "C" void Java_com_epicgames_ue4_GameActivity_nativeBoolVariationCallback(
 	if(BoolFlagListeners.Contains(FlagName))
 	{
 		bool FlagValue = JFlagValue == JNI_TRUE;
-		TArray<ULdBoolFlagListener*>& Listeners = FLaunchDarklyImpl::BoolFlagListeners[FlagName];
-		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 0boolCallbackEntered for >>%s<<."), *FlagName);
+		TArray<ULdBoolFlagListener*>& Listeners = BoolFlagListeners[FlagName];
 		AsyncTask(ENamedThreads::GameThread, [&Listeners, FlagValue]()
 			{
-				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 1bool task entered for %d."), Listeners.Num());
 				for(ULdBoolFlagListener* Listener : Listeners)
 				{
-					UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 2bool pre changed."));
 					Listener->ValueChanged(FlagValue);
-					UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 3bool post changed."));
 				}
-				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 4bool task completed."));
 			}
 		);
 	}
@@ -581,18 +859,13 @@ extern "C" void Java_com_epicgames_ue4_GameActivity_nativeFloatVariationCallback
 	if(FloatFlagListeners.Contains(FlagName))
 	{
 		float FlagValue = (float)JFlagValue;
-		TArray<ULdFloatFlagListener*>& Listeners = FLaunchDarklyImpl::FloatFlagListeners[FlagName];
-		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 0floatCallbackEntered for >>%s<<."), *FlagName);
+		TArray<ULdFloatFlagListener*>& Listeners = FloatFlagListeners[FlagName];
 		AsyncTask(ENamedThreads::GameThread, [&Listeners, FlagValue]()
 			{
-				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 1float task entered for %d."), Listeners.Num());
 				for(ULdFloatFlagListener* Listener : Listeners)
 				{
-					UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 2float pre changed."));
 					Listener->ValueChanged(FlagValue);
-					UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 3float post changed."));
 				}
-				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 4float task completed."));
 			}
 		);
 	}
@@ -605,18 +878,13 @@ extern "C" void Java_com_epicgames_ue4_GameActivity_nativeIntVariationCallback(J
 	if(IntFlagListeners.Contains(FlagName))
 	{
 		int FlagValue = (int)JFlagValue;
-		TArray<ULdIntFlagListener*>& Listeners = FLaunchDarklyImpl::IntFlagListeners[FlagName];
-		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 0intCallbackEntered for >>%s<<."), *FlagName);
+		TArray<ULdIntFlagListener*>& Listeners = IntFlagListeners[FlagName];
 		AsyncTask(ENamedThreads::GameThread, [&Listeners, FlagValue]()
 			{
-				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 1int task entered."));
 				for(ULdIntFlagListener* Listener : Listeners)
 				{
-					UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 2int pre changed for %d."), Listeners.Num());
 					Listener->ValueChanged(FlagValue);
-					UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 3int post changed."));
 				}
-				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 4int task completed."));
 			}
 		);
 	}
@@ -629,21 +897,16 @@ extern "C" void Java_com_epicgames_ue4_GameActivity_nativeJsonVariationCallback(
 	if(JsonFlagListeners.Contains(FlagName))
 	{
 		FString FlagValueAsString = FString(Env->GetStringUTFChars(JFlagValue, 0));
-		TArray<ULdJsonFlagListener*>& Listeners = FLaunchDarklyImpl::JsonFlagListeners[FlagName];
-		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 0jsonCallbackEntered for >>%s<<."), *FlagName);
+		TArray<ULdJsonFlagListener*>& Listeners = JsonFlagListeners[FlagName];
 		AsyncTask(ENamedThreads::GameThread, [&Listeners, FlagValueAsString]()
 			{
-				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 1json task entered."));
 				TSharedPtr<FJsonObject> FlagJsonData = ULaunchDarklyHelpers::StringToJsonObject(FlagValueAsString);
 				ULdNodeObject* FlagValue = NewObject<ULdNodeObject>();
 				FlagValue->Initialize(FlagJsonData);
 				for(ULdJsonFlagListener* Listener : Listeners)
 				{
-					UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 2json pre changed for %d."), Listeners.Num());
 					Listener->ValueChanged(FlagValue);
-					UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 3json post changed."));
 				}
-				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 4json task completed."));
 			}
 		);
 	}
@@ -656,22 +919,117 @@ extern "C" void Java_com_epicgames_ue4_GameActivity_nativeStringVariationCallbac
 	if(StringFlagListeners.Contains(FlagName))
 	{
 		FString FlagValue = FString(Env->GetStringUTFChars(JFlagValue, 0));
-		TArray<ULdStringFlagListener*>& Listeners = FLaunchDarklyImpl::StringFlagListeners[FlagName];
-		UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 0stringCallbackEntered for >>%s<<."), *FlagName);
+		TArray<ULdStringFlagListener*>& Listeners = StringFlagListeners[FlagName];
 		AsyncTask(ENamedThreads::GameThread, [&Listeners, FlagValue]()
 			{
-				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 1string task entered for %d."), Listeners.Num());
 				for(ULdStringFlagListener* Listener : Listeners)
 				{
-					UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 2string pre changed."));
 					Listener->ValueChanged(FlagValue);
-					UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 3string post changed."));
 				}
-				UE_LOG(LaunchDarklyClient, Log, TEXT(">>> FLaunchDarklyImpl (ANDROID) Logger: 4string task completed."));
 			}
 		);
 	}
 }
+
+
+extern "C" void Java_com_epicgames_ue4_GameActivity_nativeBoolVariationComponentCallback(JNIEnv * Env, jobject Thiz, jstring JFlagName, jboolean JFlagValue)
+{
+	FString FlagName = FString(Env->GetStringUTFChars(JFlagName, 0));
+	TMap<FString, TArray<ULdBoolFlagListenerComponent*>>& BoolFlagListeners = FLaunchDarklyClientModule::Get()->GetBoolFlagListenerComponents();
+	if(BoolFlagListeners.Contains(FlagName))
+	{
+		bool FlagValue = JFlagValue == JNI_TRUE;
+		TArray<ULdBoolFlagListenerComponent*>& Listeners = BoolFlagListeners[FlagName];
+		AsyncTask(ENamedThreads::GameThread, [&Listeners, FlagValue]()
+			{
+				for(ULdBoolFlagListenerComponent* Listener : Listeners)
+				{
+					Listener->ValueChanged(FlagValue);
+				}
+			}
+		);
+	}
+}
+
+extern "C" void Java_com_epicgames_ue4_GameActivity_nativeFloatVariationComponentCallback(JNIEnv * Env, jobject Thiz, jstring JFlagName, jfloat JFlagValue)
+{
+	FString FlagName = FString(Env->GetStringUTFChars(JFlagName, 0));
+	TMap<FString, TArray<ULdFloatFlagListenerComponent*>>& FloatFlagListeners = FLaunchDarklyClientModule::Get()->GetFloatFlagListenerComponents();
+	if(FloatFlagListeners.Contains(FlagName))
+	{
+		float FlagValue = (float)JFlagValue;
+		TArray<ULdFloatFlagListenerComponent*>& Listeners = FloatFlagListeners[FlagName];
+		AsyncTask(ENamedThreads::GameThread, [&Listeners, FlagValue]()
+			{
+				for(ULdFloatFlagListenerComponent* Listener : Listeners)
+				{
+					Listener->ValueChanged(FlagValue);
+				}
+			}
+		);
+	}
+}
+
+extern "C" void Java_com_epicgames_ue4_GameActivity_nativeIntVariationComponentCallback(JNIEnv * Env, jobject Thiz, jstring JFlagName, jint JFlagValue)
+{
+	FString FlagName = FString(Env->GetStringUTFChars(JFlagName, 0));
+	TMap<FString, TArray<ULdIntFlagListenerComponent*>>& IntFlagListeners = FLaunchDarklyClientModule::Get()->GetIntFlagListenerComponents();
+	if(IntFlagListeners.Contains(FlagName))
+	{
+		int FlagValue = (int)JFlagValue;
+		TArray<ULdIntFlagListenerComponent*>& Listeners = IntFlagListeners[FlagName];
+		AsyncTask(ENamedThreads::GameThread, [&Listeners, FlagValue]()
+			{
+				for(ULdIntFlagListenerComponent* Listener : Listeners)
+				{
+					Listener->ValueChanged(FlagValue);
+				}
+			}
+		);
+	}
+}
+
+extern "C" void Java_com_epicgames_ue4_GameActivity_nativeJsonVariationComponentCallback(JNIEnv * Env, jobject Thiz, jstring JFlagName, jstring JFlagValue)
+{
+	FString FlagName = FString(Env->GetStringUTFChars(JFlagName, 0));
+	TMap<FString, TArray<ULdJsonFlagListenerComponent*>>& JsonFlagListeners = FLaunchDarklyClientModule::Get()->GetJsonFlagListenerComponents();
+	if(JsonFlagListeners.Contains(FlagName))
+	{
+		FString FlagValueAsString = FString(Env->GetStringUTFChars(JFlagValue, 0));
+		TArray<ULdJsonFlagListenerComponent*>& Listeners = JsonFlagListeners[FlagName];
+		AsyncTask(ENamedThreads::GameThread, [&Listeners, FlagValueAsString]()
+			{
+				TSharedPtr<FJsonObject> FlagJsonData = ULaunchDarklyHelpers::StringToJsonObject(FlagValueAsString);
+				ULdNodeObject* FlagValue = NewObject<ULdNodeObject>();
+				FlagValue->Initialize(FlagJsonData);
+				for(ULdJsonFlagListenerComponent* Listener : Listeners)
+				{
+					Listener->ValueChanged(FlagValue);
+				}
+			}
+		);
+	}
+}
+
+extern "C" void Java_com_epicgames_ue4_GameActivity_nativeStringVariationComponentCallback(JNIEnv * Env, jobject Thiz, jstring JFlagName, jstring JFlagValue)
+{
+	FString FlagName = FString(Env->GetStringUTFChars(JFlagName, 0));
+	TMap<FString, TArray<ULdStringFlagListenerComponent*>>& StringFlagListeners = FLaunchDarklyClientModule::Get()->GetStringFlagListenerComponents();
+	if(StringFlagListeners.Contains(FlagName))
+	{
+		FString FlagValue = FString(Env->GetStringUTFChars(JFlagValue, 0));
+		TArray<ULdStringFlagListenerComponent*>& Listeners = StringFlagListeners[FlagName];
+		AsyncTask(ENamedThreads::GameThread, [&Listeners, FlagValue]()
+			{
+				for(ULdStringFlagListenerComponent* Listener : Listeners)
+				{
+					Listener->ValueChanged(FlagValue);
+				}
+			}
+		);
+	}
+}
+
 
 
 #endif

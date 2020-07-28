@@ -61,6 +61,26 @@ public:
 
 	void UnregisterStringFlagListener(ULdStringFlagListener* FlagListener, FString FlagName) override;
 
+	void RegisterBoolFlagListenerComponent(ULdBoolFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void UnregisterBoolFlagListenerComponent(ULdBoolFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void RegisterFloatFlagListenerComponent(ULdFloatFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void UnregisterFloatFlagListenerComponent(ULdFloatFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void RegisterIntFlagListenerComponent(ULdIntFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void UnregisterIntFlagListenerComponent(ULdIntFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void RegisterJsonFlagListenerComponent(ULdJsonFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void UnregisterJsonFlagListenerComponent(ULdJsonFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void RegisterStringFlagListenerComponent(ULdStringFlagListenerComponent* FlagListener, FString FlagName) override;
+
+	void UnregisterStringFlagListenerComponent(ULdStringFlagListenerComponent* FlagListener, FString FlagName) override;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	// METRIC TRACKING /////////////////////////////////////////////////////////////////////////////
 	void Track(FString MetricName) override;

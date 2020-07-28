@@ -21,7 +21,7 @@
 	</resourceCopies>
 
 	<AARImports>
-		<insertValue value="com.launchdarkly,launchdarkly-android-client-sdk,2.9.1" />
+		<insertValue value="com.launchdarkly,launchdarkly-android-client-sdk,2.12.0" />
 		<insertNewline/>
 		<insertValue value="com.google.code.gson,gson,2.8.2" />
 		<insertNewline/>
@@ -66,12 +66,24 @@
     public native void nativeJsonVariationCallback(String flagName, String FlagValue);
     public native void nativeStringVariationCallback(String flagName, String FlagValue);
 
+    public native void nativeBoolVariationComponentCallback(String flagName, boolean FlagValue);
+    public native void nativeFloatVariationComponentCallback(String flagName, float FlagValue);
+    public native void nativeIntVariationComponentCallback(String flagName, int FlagValue);
+    public native void nativeJsonVariationComponentCallback(String flagName, String FlagValue);
+    public native void nativeStringVariationComponentCallback(String flagName, String FlagValue);
+
     private Gson gson = new Gson();
     private Map<String, FeatureFlagChangeListener> registeredBoolFlagListeners = new HashMap<String, FeatureFlagChangeListener>();
     private Map<String, FeatureFlagChangeListener> registeredFloatFlagListeners = new HashMap<String, FeatureFlagChangeListener>();
     private Map<String, FeatureFlagChangeListener> registeredIntFlagListeners = new HashMap<String, FeatureFlagChangeListener>();
     private Map<String, FeatureFlagChangeListener> registeredJsonFlagListeners = new HashMap<String, FeatureFlagChangeListener>();
     private Map<String, FeatureFlagChangeListener> registeredStringFlagListeners = new HashMap<String, FeatureFlagChangeListener>();
+
+    private Map<String, FeatureFlagChangeListener> registeredBoolFlagListenerComponents = new HashMap<String, FeatureFlagChangeListener>();
+    private Map<String, FeatureFlagChangeListener> registeredFloatFlagListenerComponents = new HashMap<String, FeatureFlagChangeListener>();
+    private Map<String, FeatureFlagChangeListener> registeredIntFlagListenerComponents = new HashMap<String, FeatureFlagChangeListener>();
+    private Map<String, FeatureFlagChangeListener> registeredJsonFlagListenerComponents = new HashMap<String, FeatureFlagChangeListener>();
+    private Map<String, FeatureFlagChangeListener> registeredStringFlagListenerComponents = new HashMap<String, FeatureFlagChangeListener>();
 
     private String keyAllAttributesPrivate = "all-attributes-private";
     private String keyBackgroundPollingIntervalMillis = "background-polling-interval-millis";
@@ -570,10 +582,10 @@
         }
 
         if(ldClient != null) {
-            registeredIntFlagListeners.remove(flagName);
+            ldClient.unregisterFeatureFlagListener(flagName, registeredIntFlagListeners.get(flagName));
         }
 
-        ldClient.unregisterFeatureFlagListener(flagName, registeredIntFlagListeners.get(flagName));
+        registeredIntFlagListeners.remove(flagName);
     }
 
     public void AndroidLdSdkInterface_RegisterJsonFeatureFlagListener(final String flagName) {
@@ -637,6 +649,157 @@
         registeredStringFlagListeners.remove(flagName);
     }
 
+    public void AndroidLdSdkInterface_RegisterBoolFeatureFlagListenerComponent(final String flagName) {
+        if (registeredBoolFlagListenerComponents.containsKey(flagName)) {
+            return;
+        }
+
+        registeredBoolFlagListenerComponents.put(flagName, new FeatureFlagChangeListener() {
+            @Override
+            public void onFeatureFlagChange(String flagKey) {
+                android.util.Log.i(ldAndroidLogTag, "nativeBoolVariationComponentCallback: Called for >>" + flagKey + "<<");
+                nativeBoolVariationComponentCallback(flagKey, ldClient.boolVariation(flagKey, false));
+            }
+        });
+
+        if(ldClient != null) {
+		    ldClient.registerFeatureFlagListener(flagName, registeredBoolFlagListenerComponents.get(flagName));
+		}
+    }
+
+    public void AndroidLdSdkInterface_UnregisterBoolFeatureFlagListenerComponent(final String flagName) {
+        if (registeredBoolFlagListenerComponents.containsKey(flagName) == false) {
+            return;
+        }
+
+        if(ldClient != null) {
+            ldClient.unregisterFeatureFlagListener(flagName, registeredBoolFlagListenerComponents.get(flagName));
+        }
+
+        registeredBoolFlagListenerComponents.remove(flagName);
+    }
+
+    public void AndroidLdSdkInterface_RegisterFloatFeatureFlagListenerComponent(final String flagName) {
+        if (registeredFloatFlagListenerComponents.containsKey(flagName)) {
+            return;
+        }
+
+        registeredFloatFlagListenerComponents.put(flagName, new FeatureFlagChangeListener() {
+            @Override
+            public void onFeatureFlagChange(String flagKey) {
+                android.util.Log.i(ldAndroidLogTag, "nativeFloatVariationComponentCallback: Called for >>" + flagKey + "<<");
+                nativeFloatVariationComponentCallback(flagKey, ldClient.floatVariation(flagKey, 0.0f));
+            }
+        });
+
+        if(ldClient != null) {
+            ldClient.registerFeatureFlagListener(flagName, registeredFloatFlagListenerComponents.get(flagName));
+        }
+    }
+
+    public void AndroidLdSdkInterface_UnregisterFloatFeatureFlagListenerComponent(final String flagName) {
+        if (registeredFloatFlagListenerComponents.containsKey(flagName) == false) {
+            return;
+        }
+
+        if(ldClient != null) {
+            ldClient.unregisterFeatureFlagListener(flagName, registeredFloatFlagListenerComponents.get(flagName));
+        }
+
+        registeredFloatFlagListenerComponents.remove(flagName);
+    }
+
+    public void AndroidLdSdkInterface_RegisterIntFeatureFlagListenerComponent(final String flagName) {
+        if (registeredIntFlagListenerComponents.containsKey(flagName)) {
+            return;
+        }
+
+        registeredIntFlagListenerComponents.put(flagName, new FeatureFlagChangeListener() {
+            @Override
+            public void onFeatureFlagChange(String flagKey) {
+                android.util.Log.i(ldAndroidLogTag, "nativeIntVariationComponentCallback: Called for >>" + flagKey + "<<");
+                nativeIntVariationComponentCallback(flagKey, ldClient.intVariation(flagKey, 0));
+            }
+        });
+
+        if(ldClient != null) {
+            ldClient.registerFeatureFlagListener(flagName, registeredIntFlagListenerComponents.get(flagName));
+        }
+    }
+
+    public void AndroidLdSdkInterface_UnregisterIntFeatureFlagListenerComponent(final String flagName) {
+        if (registeredIntFlagListenerComponents.containsKey(flagName) == false) {
+            return;
+        }
+
+        if(ldClient != null) {
+            ldClient.unregisterFeatureFlagListener(flagName, registeredIntFlagListenerComponents.get(flagName));
+        }
+
+        registeredIntFlagListenerComponents.remove(flagName);
+    }
+
+    public void AndroidLdSdkInterface_RegisterJsonFeatureFlagListenerComponent(final String flagName) {
+        if (registeredJsonFlagListenerComponents.containsKey(flagName)) {
+            return;
+        }
+
+        registeredJsonFlagListenerComponents.put(flagName, new FeatureFlagChangeListener() {
+            @Override
+            public void onFeatureFlagChange(String flagKey) {
+                JsonElement defaultElement = gson.fromJson("{}", JsonElement.class);
+                android.util.Log.i(ldAndroidLogTag, "nativeJsonVariationComponentCallback: Called for >>" + flagKey + "<<");
+                nativeJsonVariationComponentCallback(flagKey, ldClient.jsonVariation(flagName, defaultElement).toString());
+            }
+        });
+
+        if(ldClient != null) {
+            ldClient.registerFeatureFlagListener(flagName, registeredJsonFlagListenerComponents.get(flagName));
+        }
+    }
+
+    public void AndroidLdSdkInterface_UnregisterJsonFeatureFlagListenerComponent(final String flagName) {
+        if (registeredJsonFlagListenerComponents.containsKey(flagName) == false) {
+            return;
+        }
+
+        if(ldClient != null) {
+            ldClient.unregisterFeatureFlagListener(flagName, registeredJsonFlagListenerComponents.get(flagName));
+        }
+
+        registeredJsonFlagListenerComponents.remove(flagName);
+    }
+
+    public void AndroidLdSdkInterface_RegisterStringFeatureFlagListenerComponent(final String flagName) {
+        if (registeredStringFlagListenerComponents.containsKey(flagName)) {
+            return;
+        }
+
+        registeredStringFlagListenerComponents.put(flagName, new FeatureFlagChangeListener() {
+            @Override
+            public void onFeatureFlagChange(String flagKey) {
+                android.util.Log.i(ldAndroidLogTag, "nativeStringVariationComponentCallback: Called for >>" + flagKey + "<<");
+                nativeStringVariationComponentCallback(flagKey, ldClient.stringVariation(flagKey, ""));
+            }
+        });
+
+        if(ldClient != null) {
+            ldClient.registerFeatureFlagListener(flagName, registeredStringFlagListenerComponents.get(flagName));
+        }
+    }
+
+    public void AndroidLdSdkInterface_UnregisterStringFeatureFlagListenerComponent(final String flagName) {
+        if (registeredStringFlagListenerComponents.containsKey(flagName) == false) {
+            return;
+        }
+
+        if(ldClient != null) {
+            ldClient.unregisterFeatureFlagListener(flagName, registeredStringFlagListenerComponents.get(flagName));
+        }
+
+        registeredStringFlagListenerComponents.remove(flagName);
+    }
+
     public void AndroidLdSdkInterface_Track(String metricName) {
         if(ldClient == null) {
             android.util.Log.w(ldAndroidLogTag, "Track called while Client is null. Likely uninitialized.");
@@ -678,6 +841,26 @@
             String value = ldClient.stringVariation(key, "");
             nativeStringVariationCallback(key, value);
         }
+        for(String key : registeredBoolFlagListenerComponents.keySet()) {
+            boolean value = ldClient.boolVariation(key, false);
+            nativeBoolVariationComponentCallback(key, value);
+        }
+        for(String key : registeredFloatFlagListenerComponents.keySet()) {
+            float value = ldClient.floatVariation(key, 0.0f);
+            nativeFloatVariationComponentCallback(key, value);
+        }
+        for(String key : registeredIntFlagListenerComponents.keySet()) {
+            int value = ldClient.intVariation(key, 0);
+            nativeIntVariationComponentCallback(key, value);
+        }
+        for(String key : registeredJsonFlagListenerComponents.keySet()) {
+            JsonElement defaultElement = gson.fromJson("{}", JsonElement.class);
+            nativeJsonVariationComponentCallback(key, ldClient.jsonVariation(key, defaultElement).toString());
+        }
+        for(String key : registeredStringFlagListenerComponents.keySet()) {
+            String value = ldClient.stringVariation(key, "");
+            nativeStringVariationComponentCallback(key, value);
+        }
         android.util.Log.i(ldAndroidLogTag, "UpdateAllFlagListeners: COMPLETE");
     }
 
@@ -697,6 +880,21 @@
         }
         for(String key : registeredStringFlagListeners.keySet()) {
             ldClient.registerFeatureFlagListener(key, registeredStringFlagListeners.get(key));
+        }
+        for(String key : registeredBoolFlagListenerComponents.keySet()) {
+            ldClient.registerFeatureFlagListener(key, registeredBoolFlagListenerComponents.get(key));
+        }
+        for(String key : registeredFloatFlagListenerComponents.keySet()) {
+            ldClient.registerFeatureFlagListener(key, registeredFloatFlagListenerComponents.get(key));
+        }
+        for(String key : registeredIntFlagListenerComponents.keySet()) {
+            ldClient.registerFeatureFlagListener(key, registeredIntFlagListenerComponents.get(key));
+        }
+        for(String key : registeredJsonFlagListenerComponents.keySet()) {
+            ldClient.registerFeatureFlagListener(key, registeredJsonFlagListenerComponents.get(key));
+        }
+        for(String key : registeredStringFlagListenerComponents.keySet()) {
+            ldClient.registerFeatureFlagListener(key, registeredStringFlagListenerComponents.get(key));
         }
         android.util.Log.i(ldAndroidLogTag, "RegisterFlagListeners: COMPLETE!");
 	}

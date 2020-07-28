@@ -9,13 +9,21 @@ class ULdFloatFlagListener;
 class ULdIntFlagListener;
 class ULdJsonFlagListener;
 class ULdStringFlagListener;
+class ULdBoolFlagListenerComponent;
+class ULdFloatFlagListenerComponent;
+class ULdIntFlagListenerComponent;
+class ULdJsonFlagListenerComponent;
+class ULdStringFlagListenerComponent;
 class ULdUserObject;
+
+typedef void (*FlagListenerFP)(const char* const, const int);
 
 DECLARE_LOG_CATEGORY_EXTERN(LaunchDarklyClient, Log, All);
 
 class LAUNCHDARKLYCLIENT_API FLaunchDarklyImplBase
 {
 public:
+
 	virtual ~FLaunchDarklyImplBase() {}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -78,6 +86,39 @@ public:
 
 	virtual void UnregisterStringFlagListener(ULdStringFlagListener* FlagListener, FString FlagName);
 
+	TMap<FString, TArray<ULdBoolFlagListenerComponent*>>& GetBoolFlagListenerComponents();
+
+	virtual void RegisterBoolFlagListenerComponent(ULdBoolFlagListenerComponent* FlagListenerComponent, FString FlagName);
+	
+	virtual void UnregisterBoolFlagListenerComponent(ULdBoolFlagListenerComponent* FlagListener, FString FlagName);
+
+	TMap<FString, TArray<ULdFloatFlagListenerComponent*>>& GetFloatFlagListenerComponents();
+
+	virtual void RegisterFloatFlagListenerComponent(ULdFloatFlagListenerComponent* FlagListenerComponent, FString FlagName);
+	
+	virtual void UnregisterFloatFlagListenerComponent(ULdFloatFlagListenerComponent* FlagListener, FString FlagName);
+
+	TMap<FString, TArray<ULdIntFlagListenerComponent*>>& GetIntFlagListenerComponents();
+
+	virtual void RegisterIntFlagListenerComponent(ULdIntFlagListenerComponent* FlagListenerComponent, FString FlagName);
+	
+	virtual void UnregisterIntFlagListenerComponent(ULdIntFlagListenerComponent* FlagListener, FString FlagName);
+
+	TMap<FString, TArray<ULdJsonFlagListenerComponent*>>& GetJsonFlagListenerComponents();
+
+	virtual void RegisterJsonFlagListenerComponent(ULdJsonFlagListenerComponent* FlagListenerComponent, FString FlagName);
+	
+	virtual void UnregisterJsonFlagListenerComponent(ULdJsonFlagListenerComponent* FlagListener, FString FlagName);
+
+	TMap<FString, TArray<ULdStringFlagListenerComponent*>>& GetStringFlagListenerComponents();
+
+	virtual void RegisterStringFlagListenerComponent(ULdStringFlagListenerComponent* FlagListenerComponent, FString FlagName);
+	
+	virtual void UnregisterStringFlagListenerComponent(ULdStringFlagListenerComponent* FlagListener, FString FlagName);
+
+	TMap<FString, FlagListenerFP>& GetUnregisteredFlagListeners();
+
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	// METRIC TRACKING /////////////////////////////////////////////////////////////////////////////
 	virtual void Track(FString MetricName);
@@ -92,6 +133,8 @@ protected:
 	void ResetListeners();
 
 	UPROPERTY()
+	TMap<FString, FlagListenerFP> UnregisteredFlagListeners;
+	UPROPERTY()
 	TMap<FString, TArray<ULdBoolFlagListener*>> BoolFlagListeners;
 	UPROPERTY()
 	TMap<FString, TArray<ULdFloatFlagListener*>> FloatFlagListeners;
@@ -101,4 +144,14 @@ protected:
 	TMap<FString, TArray<ULdJsonFlagListener*>> JsonFlagListeners;
 	UPROPERTY()
 	TMap<FString, TArray<ULdStringFlagListener*>> StringFlagListeners;
+	UPROPERTY()
+	TMap<FString, TArray<ULdBoolFlagListenerComponent*>> BoolFlagListenerComponents;
+	UPROPERTY()
+	TMap<FString, TArray<ULdFloatFlagListenerComponent*>> FloatFlagListenerComponents;
+	UPROPERTY()
+	TMap<FString, TArray<ULdIntFlagListenerComponent*>> IntFlagListenerComponents;
+	UPROPERTY()
+	TMap<FString, TArray<ULdJsonFlagListenerComponent*>> JsonFlagListenerComponents;
+	UPROPERTY()
+	TMap<FString, TArray<ULdStringFlagListenerComponent*>> StringFlagListenerComponents;
 };
